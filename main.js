@@ -1,6 +1,7 @@
 // uses www.phaser.io
 
-// Global variables, i.e., global to everythingvar DEBUG = false;
+// Global variables, i.e., global to everything
+var DEBUG = false;
 var SPEED = 690;
 var GRAVITY = 40;
 var FLAP = 620;
