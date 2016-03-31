@@ -46,28 +46,6 @@ var state = {
         false
     );
 
-// “gameStarted”, “gameOver”, “score”, “bg”, etc. are semi-global”, i.e., global to everything between the two red lines
-// The type of each of these variables will be determined at first use.
-
-    var gameStarted,
-        gameOver,
-        score,
-        bg,
-        credits,
-        clouds,
-        fingers,
-        invs,
-        birdie,
-        fence,
-        scoreText,
-        instText,
-        gameOverText,
-        flapSnd,
-        scoreSnd,
-        hurtSnd,
-        fingersTimer,
-        cloudsTimer;
-
     function preload() {                // assign YOUR GAME specific assets - images and sounds
         var assets = {
             spritesheet: {
@@ -90,6 +68,28 @@ var state = {
             });
         });
     }
+
+// “gameStarted”, “gameOver”, “score”, “bg”, etc. are semi-global”, i.e., global to everything between the two red lines
+// The type of each of these variables will be determined at first use.
+
+    var gameStarted,
+        gameOver,
+        score,
+        bg,
+        credits,
+        clouds,
+        fingers,
+        invs,
+        birdie,
+        fence,
+        scoreText,
+        instText,
+        gameOverText,
+        flapSnd,
+        scoreSnd,
+        hurtSnd,
+        fingersTimer,
+        cloudsTimer;
 
     function create() {                // provide YOUR GAME-specific attributes for use with Phaser
 
@@ -139,7 +139,7 @@ var state = {
         fence = game.add.tileSprite(0, game.world.height - 32, game.world.width, 32, 'fence');
         fence.tileScale.setTo(2, 2);
 
-        // // Score - size, shape, and color of score “box”, font spec
+        // Score - size, shape, and color of score “box”, font spec
         scoreText = game.add.text(
             game.world.width / 2,
             game.world.height / 4,
@@ -210,7 +210,150 @@ var state = {
         reset();
     }
 
-   function update() {                // update the screen periodically
+    function reset() {      // set up for a new game
+        gameStarted = false;       //  old game has ended
+        gameOver = false;           //  reset for new game
+        score = 0;                        //  reset for new game
+        credits.renderable = true;
+        scoreText.setText("DON'T\nTOUCH\nMY\nBIRDIE 1");
+        instText.setText("TOUCH TO FLAP\nBIRDIE WINGS");
+        gameOverText.renderable = false;
+        birdie.body.allowGravity = false;     // set birdie to hovering
+        birdie.angle = 0;                             // birdie has no pitch
+        birdie.reset(game.world.width / 4, game.world.height / 2);
+        birdie.scale.setTo(2, 2);
+        birdie.animations.play('fly');
+        fingers.removeAll();            // remove all the barriers
+        invs.removeAll();
+    }
+
+    function start() {        //  start a new game
+        credits.renderable = false;
+        birdie.body.allowGravity = true;
+
+        // start drawing the fingers
+        fingersTimer = new Phaser.Timer(game);
+        fingersTimer.onEvent.add(spawnFingers);
+        fingersTimer.start();
+        fingersTimer.add(2);
+
+        // Show score
+        scoreText.setText(score);
+        instText.renderable = false;
+
+        // START!
+        gameStarted = true;
+    }
+    function flap() {      // runs upon mouse click(and spacebar prep)
+        if (!gameStarted) {    // if game has not already started, start it
+            start();
+        }
+        if (!gameOver) {       // if game is still running, reverse y-direction of birdie ???
+            birdie.body.velocity.y = -FLAP;
+            flapSnd.play();
+        }
+    }
+
+    function spawnCloud() {    // draw a cloud to move across the screen
+        cloudsTimer.stop();
+
+        var cloudY = Math.random() * game.height / 2;
+        var cloud = clouds.create(
+            game.width,
+            cloudY,
+            'clouds',
+            Math.floor(4 * Math.random())
+        );
+        var cloudScale = 2 + 2 * Math.random();
+        cloud.alpha = 2 / cloudScale;
+        cloud.scale.setTo(cloudScale, cloudScale);
+        cloud.body.allowGravity = false;
+        cloud.body.velocity.x = -SPEED / cloudScale;
+        cloud.anchor.y = 0;
+
+        cloudsTimer.start();
+        cloudsTimer.add(4 * Math.random());
+    }
+
+   function o() {
+        return OPENING + 60 * ((score > 50 ? 50 : 50 - score) / 50);
+    }
+
+    function spawnFinger(fingerY, flipped) {   //  individual finger setup for drawing
+        var finger = fingers.create(
+            game.width,
+            fingerY + (flipped ? -o() : o()) / 2,
+            'finger'
+        );
+        finger.body.allowGravity = false;
+
+        // Flip finger! *GASP*
+        finger.scale.setTo(2, flipped ? -2 : 2);
+        finger.body.offset.y = flipped ? -finger.body.height * 2 : 0;
+
+        // Move to the left
+        finger.body.velocity.x = -SPEED;
+
+        return finger;
+    }
+
+    function spawnFingers() {   // draw fingers to move across the screen
+        fingersTimer.stop();
+
+        var fingerY = ((game.height - 16 - o() / 2) / 2) + (Math.random() > 0.5 ? -1 : 1) * Math.random() * game.height / 6;
+
+        // Bottom finger
+        var botFinger = spawnFinger(fingerY);
+
+        // Top finger (flipped)
+        var topFinger = spawnFinger(fingerY, true);
+
+        // Add invisible thingy
+        var inv = invs.create(topFinger.x + topFinger.width, 0);
+        inv.width = 2;
+        inv.height = game.world.height;
+        inv.body.allowGravity = false;
+        inv.body.velocity.x = -SPEED;
+
+        fingersTimer.start();
+        fingersTimer.add(1 / SPAWN_RATE);
+    }
+
+   function addScore(_, inv) {     // set up the score box for printing
+        invs.remove(inv);
+        score += 1;
+        scoreText.setText(score);
+        scoreSnd.play();
+    }
+
+    function setGameOver() {     // prepare to reset variables for a new game
+        gameOver = true;
+        instText.setText("TOUCH BIRDIE\nTO TRY AGAIN");
+        instText.renderable = true;
+        var hiscore = window.localStorage.getItem('hiscore');
+        hiscore = hiscore ? hiscore : score;
+        hiscore = score > parseInt(hiscore, 10) ? score : hiscore;
+        window.localStorage.setItem('hiscore', hiscore);
+        gameOverText.setText("GAMEOVER\n\nHIGH SCORE\n" + hiscore);
+        gameOverText.renderable = true;
+
+        // Stop all finger movements by setting the x-velocity to zero
+        fingers.forEachAlive(function(finger) {
+            finger.body.velocity.x = 0;
+        });
+        invs.forEach(function(inv) {
+            inv.body.velocity.x = 0;
+        });
+
+        // Stop spawning fingers
+        fingersTimer.stop();
+
+        // Make birdie reset the game
+        birdie.events.onInputDown.addOnce(reset);
+        hurtSnd.play();
+    }
+
+    function update() {                // update the screen periodically
         if (gameStarted) {
 
             // Make birdie dive
@@ -301,150 +444,5 @@ var state = {
             });
         }
     }
-
-    function reset() {      // set up for a new game
-        gameStarted = false;       //  old game has ended
-        gameOver = false;           //  reset for new game
-        score = 0;                        //  reset for new game
-        credits.renderable = true;
-        scoreText.setText("DON'T\nTOUCH\nMY\nBIRDIE 1");
-        instText.setText("TOUCH TO FLAP\nBIRDIE WINGS");
-        gameOverText.renderable = false;
-        birdie.body.allowGravity = false;     // set birdie to hovering
-        birdie.angle = 0;                             // birdie has no pitch
-        birdie.reset(game.world.width / 4, game.world.height / 2);
-        birdie.scale.setTo(2, 2);
-        birdie.animations.play('fly');
-        fingers.removeAll();            // remove all the barriers
-        invs.removeAll();
-    }
-
-    function start() {        //  start a new game
-        credits.renderable = false;
-        birdie.body.allowGravity = true;
-
-        // start drawing the fingers
-        fingersTimer = new Phaser.Timer(game);
-        fingersTimer.onEvent.add(spawnFingers);
-        fingersTimer.start();
-        fingersTimer.add(2);
-
-        // Show score
-        scoreText.setText(score);
-        instText.renderable = false;
-
-        // START!
-        gameStarted = true;
-    }
-
-   function addScore(_, inv) {     // set up the score box for printing
-        invs.remove(inv);
-        score += 1;
-        scoreText.setText(score);
-        scoreSnd.play();
-    }
-
-    function setGameOver() {     // prepare to reset variables for a new game
-        gameOver = true;
-        instText.setText("TOUCH BIRDIE\nTO TRY AGAIN");
-        instText.renderable = true;
-        var hiscore = window.localStorage.getItem('hiscore');
-        hiscore = hiscore ? hiscore : score;
-        hiscore = score > parseInt(hiscore, 10) ? score : hiscore;
-        window.localStorage.setItem('hiscore', hiscore);
-        gameOverText.setText("GAMEOVER\n\nHIGH SCORE\n" + hiscore);
-        gameOverText.renderable = true;
-
-        // Stop all finger movements by setting the x-velocity to zero
-        fingers.forEachAlive(function(finger) {
-            finger.body.velocity.x = 0;
-        });
-        invs.forEach(function(inv) {
-            inv.body.velocity.x = 0;
-        });
-
-        // Stop spawning fingers
-        fingersTimer.stop();
-
-        // Make birdie reset the game
-        birdie.events.onInputDown.addOnce(reset);
-        hurtSnd.play();
-    }
-
-    function flap() {      // runs upon mouse click(and spacebar prep)
-        if (!gameStarted) {    // if game has not already started, start it
-            start();
-        }
-        if (!gameOver) {       // if game is still running, reverse y-direction of birdie ???
-            birdie.body.velocity.y = -FLAP;
-            flapSnd.play();
-        }
-    }
-
-   function o() {
-        return OPENING + 60 * ((score > 50 ? 50 : 50 - score) / 50);
-    }
-
-    function spawnCloud() {    // draw a cloud to move across the screen
-        cloudsTimer.stop();
-
-        var cloudY = Math.random() * game.height / 2;
-        var cloud = clouds.create(
-            game.width,
-            cloudY,
-            'clouds',
-            Math.floor(4 * Math.random())
-        );
-        var cloudScale = 2 + 2 * Math.random();
-        cloud.alpha = 2 / cloudScale;
-        cloud.scale.setTo(cloudScale, cloudScale);
-        cloud.body.allowGravity = false;
-        cloud.body.velocity.x = -SPEED / cloudScale;
-        cloud.anchor.y = 0;
-
-        cloudsTimer.start();
-        cloudsTimer.add(4 * Math.random());
-    }
-
-    function spawnFinger(fingerY, flipped) {   //  individual finger setup for drawing
-        var finger = fingers.create(
-            game.width,
-            fingerY + (flipped ? -o() : o()) / 2,
-            'finger'
-        );
-        finger.body.allowGravity = false;
-
-        // Flip finger! *GASP*
-        finger.scale.setTo(2, flipped ? -2 : 2);
-        finger.body.offset.y = flipped ? -finger.body.height * 2 : 0;
-
-        // Move to the left
-        finger.body.velocity.x = -SPEED;
-
-        return finger;
-    }
-
-    function spawnFingers() {   // draw fingers to move across the screen
-        fingersTimer.stop();
-
-        var fingerY = ((game.height - 16 - o() / 2) / 2) + (Math.random() > 0.5 ? -1 : 1) * Math.random() * game.height / 6;
-
-        // Bottom finger
-        var botFinger = spawnFinger(fingerY);
-
-        // Top finger (flipped)
-        var topFinger = spawnFinger(fingerY, true);
-
-        // Add invisible thingy
-        var inv = invs.create(topFinger.x + topFinger.width, 0);
-        inv.width = 2;
-        inv.height = game.world.height;
-        inv.body.allowGravity = false;
-        inv.body.velocity.x = -SPEED;
-
-        fingersTimer.start();
-        fingersTimer.add(1 / SPAWN_RATE);
-    }
-
 };
  
