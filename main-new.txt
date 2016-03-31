@@ -49,16 +49,16 @@ function main() {
     function preload() {    // assign YOUR GAME specific assets - images and sounds
         var assets = {
             spritesheet: {
-                birdie: ['assets/birdie.png', 24, 24],
+                birdie: ['assets/birdie.png', 35, 35],
                 clouds: ['assets/clouds.png', 128, 64]
             },
             image: {
-                finger: ['assets/finger.png', 30, 90],
-                fence: ['assets/fence.png']
+                finger: ['assets/finger.png', 90, 323],
+                fence: ['assets/fence.png', 189, 60]
             },
             audio: {
                 flap: ['assets/flap.wav'],
-                score: ['assets/score.wav'],
+/*                score: ['assets/score.wav'],*/
                 hurt: ['assets/hurt.wav']
             }
         };
