@@ -46,7 +46,7 @@ function main() {
         false
     );
 
-    function preload() {                // assign YOUR GAME specific assets - images and sounds
+    function preload() {    // assign YOUR GAME specific assets - images and sounds
         var assets = {
             spritesheet: {
                 birdie: ['assets/birdie.png', 24, 24],

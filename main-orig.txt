@@ -1,6 +1,7 @@
 // uses www.phaser.io
 
-// Global variables, i.e., global to everythingvar DEBUG = false;
+// Global variables, i.e., global to everything
+var DEBUG = false;
 var SPEED = 690;
 var GRAVITY = 40;
 var FLAP = 620;
@@ -45,7 +46,7 @@ function main() {
         false
     );
 
-    function preload() {
+    function preload() {    // assign YOUR GAME specific assets - images and sounds
         var assets = {
             spritesheet: {
                 birdie: ['assets/birdie.png', 35, 35],

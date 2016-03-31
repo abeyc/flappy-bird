@@ -23,7 +23,7 @@ WebFontConfig = {
     s.parentNode.insertBefore(wf, s);
 })();
 
-function main() {
+function main() {   // assign YOUR GAME specific assets - images and sounds
 
     // “parent” and “game” and “state” are semi-global”, i.e., global to everything between the two red lines
 
