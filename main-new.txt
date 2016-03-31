@@ -27,7 +27,7 @@ function main() {
 
     // “parent” and “game” and “state” are semi-global”, i.e., global to everything between the two red lines
 
-var state = {
+    var state = {
         preload: preload,
         create: create,
         update: update,
@@ -136,7 +136,7 @@ var state = {
         birdie.body.gravity.y = GRAVITY;
 
         // Add fence
-        fence = game.add.tileSprite(0, game.world.height - 32, game.world.width, 32, 'fence');
+        fence = game.add.tileSprite(0, game.world.height - 120, game.world.width, 120, 'fence');
         fence.tileScale.setTo(2, 2);
 
         // Score - size, shape, and color of score “box”, font spec
@@ -215,7 +215,7 @@ var state = {
         gameOver = false;           //  reset for new game
         score = 0;                        //  reset for new game
         credits.renderable = true;
-        scoreText.setText("DON'T\nTOUCH\nMY\nBIRDIE 1");
+        scoreText.setText("DON'T\nTOUCH\nMY\nBIRDIE");
         instText.setText("TOUCH TO FLAP\nBIRDIE WINGS");
         gameOverText.renderable = false;
         birdie.body.allowGravity = false;     // set birdie to hovering
@@ -276,7 +276,7 @@ var state = {
         cloudsTimer.add(4 * Math.random());
     }
 
-   function o() {
+    function o() {
         return OPENING + 60 * ((score > 50 ? 50 : 50 - score) / 50);
     }
 
@@ -320,7 +320,7 @@ var state = {
         fingersTimer.add(1 / SPAWN_RATE);
     }
 
-   function addScore(_, inv) {     // set up the score box for printing
+    function addScore(_, inv) {     // set up the score box for printing
         invs.remove(inv);
         score += 1;
         scoreText.setText(score);

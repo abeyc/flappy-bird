@@ -22,6 +22,8 @@ WebFontConfig = {
 
 function main() {
 
+    // “parent” and “game” and “state” are semi-global”, i.e., global to everything between the two red lines
+
     var state = {
         preload: preload,
         create: create,
@@ -64,6 +66,9 @@ function main() {
         });
     }
 
+// “gameStarted”, “gameOver”, “score”, “bg”, etc. are semi-global”, i.e., global to everything between the two red lines
+// The type of each of these variables will be determined at first use.
+
     var gameStarted,
         gameOver,
         score,
@@ -84,16 +89,19 @@ function main() {
         cloudsTimer;
 
     function create() {
+
         // Set world dimensions
         var screenWidth = parent.clientWidth > window.innerWidth ? window.innerWidth : parent.clientWidth;
         var screenHeight = parent.clientHeight > window.innerHeight ? window.innerHeight : parent.clientHeight;
         game.world.width = screenWidth;
         game.world.height = screenHeight;
+
         // Draw bg
         bg = game.add.graphics(0, 0);
         bg.beginFill(0xDDEEFF, 1);
         bg.drawRect(0, 0, game.world.width, game.world.height);
         bg.endFill();
+
         // Credits 'yo
         credits = game.add.text(
             game.world.width / 2,
@@ -106,12 +114,16 @@ function main() {
             }
         );
         credits.anchor.x = 0.5;
+
         // Add clouds group
         clouds = game.add.group();
+
         // Add fingers
         fingers = game.add.group();
+
         // Add invisible thingies
         invs = game.add.group();
+
         // Add birdie
         birdie = game.add.sprite(0, 0, 'birdie');
         birdie.anchor.setTo(0.5, 0.5);
@@ -119,9 +131,11 @@ function main() {
         birdie.inputEnabled = true;
         birdie.body.collideWorldBounds = true;
         birdie.body.gravity.y = GRAVITY;
+
         // Add fence
         fence = game.add.tileSprite(0, game.world.height - 120, game.world.width, 120, 'fence');
         fence.tileScale.setTo(2, 2);
+
         // Add score text
         scoreText = game.add.text(
             game.world.width / 2,
@@ -136,6 +150,7 @@ function main() {
             }
         );
         scoreText.anchor.setTo(0.5, 0.5);
+
         // Add instructions text
         instText = game.add.text(
             game.world.width / 2,
@@ -150,6 +165,7 @@ function main() {
             }
         );
         instText.anchor.setTo(0.5, 0.5);
+
         // Add game over text
         gameOverText = game.add.text(
             game.world.width / 2,
@@ -165,17 +181,21 @@ function main() {
         );
         gameOverText.anchor.setTo(0.5, 0.5);
         gameOverText.scale.setTo(2, 2);
+
         // Add sounds
         flapSnd = game.add.audio('flap');
         scoreSnd = game.add.audio('score');
         hurtSnd = game.add.audio('hurt');
+
         // Add controls
         game.input.onDown.add(flap);
+
         // Start clouds timer
         cloudsTimer = new Phaser.Timer(game);
         cloudsTimer.onEvent.add(spawnCloud);
         cloudsTimer.start();
         cloudsTimer.add(Math.random());
+
         // RESET!
         reset();
     }
@@ -200,14 +220,17 @@ function main() {
     function start() {
         credits.renderable = false;
         birdie.body.allowGravity = true;
+
         // SPAWN FINGERS!
         fingersTimer = new Phaser.Timer(game);
         fingersTimer.onEvent.add(spawnFingers);
         fingersTimer.start();
         fingersTimer.add(2);
+
         // Show score
         scoreText.setText(score);
         instText.renderable = false;
+
         // START!
         gameStarted = true;
     }
@@ -269,8 +292,10 @@ function main() {
         fingersTimer.stop();
 
         var fingerY = ((game.height - 16 - o() / 2) / 2) + (Math.random() > 0.5 ? -1 : 1) * Math.random() * game.height / 2;
+
         // Bottom finger
         var botFinger = spawnFinger(fingerY);
+
         // Top finger (flipped)
         var topFinger = spawnFinger(fingerY, false);
 
@@ -302,6 +327,7 @@ function main() {
         window.localStorage.setItem('hiscore', hiscore);
         gameOverText.setText("GAMEOVER\n\nHIGH SCORE\n" + hiscore);
         gameOverText.renderable = true;
+
         // Stop all fingers
         fingers.forEachAlive(function(finger) {
             finger.body.velocity.x = 0;
@@ -309,8 +335,10 @@ function main() {
         invs.forEach(function(inv) {
             inv.body.velocity.x = 0;
         });
+
         // Stop spawning fingers
         fingersTimer.stop();
+
         // Make birdie reset the game
         birdie.events.onInputDown.addOnce(reset);
         hurtSnd.play();
@@ -318,23 +346,22 @@ function main() {
 
     function update() {
         if (gameStarted) {
+
             // Make birdie dive
             var dvy = FLAP + birdie.body.velocity.y;
             birdie.angle = (90 * dvy / FLAP) - 180;
             if (birdie.angle < -30) {
                 birdie.angle = -30;
             }
-            if (
-                gameOver ||
-                birdie.angle > 90 ||
-                birdie.angle < -90
-            ) {
+            if (gameOver || (birdie.angle > 90) || (birdie.angle < -90)) {
                 birdie.angle = 90;
                 birdie.animations.stop();
                 birdie.frame = 3;
-            } else {
+            }
+            else {
                 birdie.animations.play('fly');
             }
+
             // Birdie is DEAD!
             if (gameOver) {
                 if (birdie.scale.x < 4) {
@@ -345,12 +372,15 @@ function main() {
                 }
                 // Shake game over text
                 gameOverText.angle = Math.random() * 5 * Math.cos(game.time.now / 100);
-            } else {
+            }
+            else {
+
                 // Check game over
                 game.physics.overlap(birdie, fingers, setGameOver);
                 if (!gameOver && birdie.body.bottom >= game.world.bounds.bottom) {
                     setGameOver();
                 }
+
                 // Add score
                 game.physics.overlap(birdie, invs, addScore);
             }
@@ -360,9 +390,11 @@ function main() {
                     finger.kill();
                 }
             });
+
             // Update finger timer
             fingersTimer.update();
-        } else {
+        }
+        else {
             birdie.y = (game.world.height / 2) + 8 * Math.cos(game.time.now / 200);
         }
         if (!gameStarted || gameOver) {
@@ -379,6 +411,7 @@ function main() {
         );
         // Update clouds timer
         cloudsTimer.update();
+
         // Remove offscreen clouds
         clouds.forEachAlive(function(cloud) {
             if (cloud.x + cloud.width < game.world.bounds.left) {
