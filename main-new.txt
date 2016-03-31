@@ -244,6 +244,7 @@ var state = {
         // START!
         gameStarted = true;
     }
+
     function flap() {      // runs upon mouse click(and spacebar prep)
         if (!gameStarted) {    // if game has not already started, start it
             start();
@@ -444,5 +445,5 @@ var state = {
             });
         }
     }
-};
+}
  
