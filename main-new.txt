@@ -381,7 +381,7 @@ function main() {
                     );
                 }
                 // Shake game over text
-                gameOverText.angle = Math.random() * 5 * Math.cos(game.time.now / 100);
+                // gameOverText.angle = Math.random() * 5 * Math.cos(game.time.now / 100);
             }
             else {
 
