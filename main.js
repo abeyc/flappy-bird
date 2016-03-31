@@ -1,9 +1,11 @@
-var DEBUG = false;
-var SPEED = 900;
-var GRAVITY = 50;
-var FLAP = 650;
+// uses www.phaser.io
+
+// Global variables, i.e., global to everythingvar DEBUG = false;
+var SPEED = 690;
+var GRAVITY = 40;
+var FLAP = 620;
 var SPAWN_RATE = 1 / 1.2;
-var OPENING = 150;
+var OPENING = 134;
 
 WebFontConfig = {
     google: { families: [ 'Press+Start+2P::latin' ] },
@@ -43,19 +45,19 @@ function main() {
         false
     );
 
-    function preload() {                // assign YOUR GAME specific assets - images and sounds
+    function preload() {
         var assets = {
             spritesheet: {
-                birdie: ['assets/birdie.png', 24, 24],
+                birdie: ['assets/birdie.png', 35, 35],
                 clouds: ['assets/clouds.png', 128, 64]
             },
             image: {
-                finger: ['assets/finger.png', 30, 90],
-                fence: ['assets/fence.png']
+                finger: ['assets/finger.png', 90, 323],
+                fence: ['assets/fence.png', 189, 60]
             },
             audio: {
                 flap: ['assets/flap.wav'],
-                score: ['assets/score.wav'],
+/*                score: ['assets/score.wav'],*/
                 hurt: ['assets/hurt.wav']
             }
         };
@@ -88,7 +90,7 @@ function main() {
         fingersTimer,
         cloudsTimer;
 
-    function create() {                // provide YOUR GAME-specific attributes for use with Phaser
+    function create() {
 
         // Set world dimensions
         var screenWidth = parent.clientWidth > window.innerWidth ? window.innerWidth : parent.clientWidth;
@@ -96,13 +98,13 @@ function main() {
         game.world.width = screenWidth;
         game.world.height = screenHeight;
 
-        // Draw bg (background)
+        // Draw bg
         bg = game.add.graphics(0, 0);
         bg.beginFill(0xDDEEFF, 1);
         bg.drawRect(0, 0, game.world.width, game.world.height);
         bg.endFill();
 
-        // Credits - size, shape, and color of credits “box”, font spec
+        // Credits 'yo
         credits = game.add.text(
             game.world.width / 2,
             10,
@@ -136,7 +138,7 @@ function main() {
         fence = game.add.tileSprite(0, game.world.height - 120, game.world.width, 120, 'fence');
         fence.tileScale.setTo(2, 2);
 
-        // Score - size, shape, and color of score “box”, font spec
+        // Add score text
         scoreText = game.add.text(
             game.world.width / 2,
             game.world.height / 4,
@@ -151,7 +153,7 @@ function main() {
         );
         scoreText.anchor.setTo(0.5, 0.5);
 
-        // Instructions - size, shape, and color of instructions “box”, font spec
+        // Add instructions text
         instText = game.add.text(
             game.world.width / 2,
             game.world.height - game.world.height / 4,
@@ -166,7 +168,7 @@ function main() {
         );
         instText.anchor.setTo(0.5, 0.5);
 
-        // Game over - size, shape, and color of game over “box”, font spec
+        // Add game over text
         gameOverText = game.add.text(
             game.world.width / 2,
             game.world.height / 2,
@@ -190,13 +192,6 @@ function main() {
         // Add controls
         game.input.onDown.add(flap);
 
-        // add keyboard controls
-        flapKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-        flapKey.onDown.add(flap);
-
-        // keep the spacebar from propagating up to the browser
-        game.input.keyboard.addKeyCapture([Phaser.Keyboard.SPACEBAR]);
-
         // Start clouds timer
         cloudsTimer = new Phaser.Timer(game);
         cloudsTimer.onEvent.add(spawnCloud);
@@ -207,28 +202,28 @@ function main() {
         reset();
     }
 
-    function reset() {      // set up for a new game
-        gameStarted = false;       //  old game has ended
-        gameOver = false;           //  reset for new game
-        score = 0;                        //  reset for new game
+    function reset() {
+        gameStarted = false;
+        gameOver = false;
+        score = 0;
         credits.renderable = true;
         scoreText.setText("DON'T\nTOUCH\nMY\nBIRDIE");
         instText.setText("TOUCH TO FLAP\nBIRDIE WINGS");
         gameOverText.renderable = false;
-        birdie.body.allowGravity = false;     // set birdie to hovering
-        birdie.angle = 0;                             // birdie has no pitch
+        birdie.body.allowGravity = false;
+        birdie.angle = 0;
         birdie.reset(game.world.width / 4, game.world.height / 2);
         birdie.scale.setTo(2, 2);
         birdie.animations.play('fly');
-        fingers.removeAll();            // remove all the barriers
+        fingers.removeAll();
         invs.removeAll();
     }
 
-    function start() {        //  start a new game
+    function start() {
         credits.renderable = false;
         birdie.body.allowGravity = true;
 
-        // start drawing the fingers
+        // SPAWN FINGERS!
         fingersTimer = new Phaser.Timer(game);
         fingersTimer.onEvent.add(spawnFingers);
         fingersTimer.start();
@@ -242,17 +237,17 @@ function main() {
         gameStarted = true;
     }
 
-    function flap() {      // runs upon mouse click(and spacebar prep)
-        if (!gameStarted) {    // if game has not already started, start it
+    function flap() {
+        if (!gameStarted) {
             start();
         }
-        if (!gameOver) {       // if game is still running, reverse y-direction of birdie ???
+        if (!gameOver) {
             birdie.body.velocity.y = -FLAP;
             flapSnd.play();
         }
     }
 
-    function spawnCloud() {    // draw a cloud to move across the screen
+    function spawnCloud() {
         cloudsTimer.stop();
 
         var cloudY = Math.random() * game.height / 2;
@@ -277,7 +272,7 @@ function main() {
         return OPENING + 60 * ((score > 50 ? 50 : 50 - score) / 50);
     }
 
-    function spawnFinger(fingerY, flipped) {   //  individual finger setup for drawing
+    function spawnFinger(fingerY, flipped) {
         var finger = fingers.create(
             game.width,
             fingerY + (flipped ? -o() : o()) / 2,
@@ -295,10 +290,10 @@ function main() {
         return finger;
     }
 
-    function spawnFingers() {   // draw fingers to move across the screen
+    function spawnFingers() {
         fingersTimer.stop();
 
-        var fingerY = ((game.height - 16 - o() / 2) / 2) + (Math.random() > 0.5 ? -1 : 1) * Math.random() * game.height / 6;
+        var fingerY = ((game.height - 16 - o() / 2) / 2) + (Math.random() > 0.5 ? -1 : 1) * Math.random() * game.height / 2;
 
         // Bottom finger
         var botFinger = spawnFinger(fingerY);
@@ -317,14 +312,14 @@ function main() {
         fingersTimer.add(1 / SPAWN_RATE);
     }
 
-    function addScore(_, inv) {     // set up the score box for printing
+    function addScore(_, inv) {
         invs.remove(inv);
         score += 1;
         scoreText.setText(score);
         scoreSnd.play();
     }
 
-    function setGameOver() {     // prepare to reset variables for a new game
+    function setGameOver() {
         gameOver = true;
         instText.setText("TOUCH BIRDIE\nTO TRY AGAIN");
         instText.renderable = true;
@@ -335,7 +330,7 @@ function main() {
         gameOverText.setText("GAMEOVER\n\nHIGH SCORE\n" + hiscore);
         gameOverText.renderable = true;
 
-        // Stop all finger movements by setting the x-velocity to zero
+        // Stop all fingers
         fingers.forEachAlive(function(finger) {
             finger.body.velocity.x = 0;
         });
@@ -351,7 +346,7 @@ function main() {
         hurtSnd.play();
     }
 
-    function update() {                // update the screen periodically
+    function update() {
         if (gameStarted) {
 
             // Make birdie dive
@@ -431,7 +426,7 @@ function main() {
         }
     }
 
-    function render() {          // doesn’t do anything if DEBUG == false
+    function render() {
         if (DEBUG) {
             game.debug.renderSpriteBody(birdie);
             fingers.forEachAlive(function(finger) {
@@ -442,4 +437,4 @@ function main() {
             });
         }
     }
-};
+}
