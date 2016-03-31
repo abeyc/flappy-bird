@@ -46,6 +46,28 @@ var state = {
         false
     );
 
+// “gameStarted”, “gameOver”, “score”, “bg”, etc. are semi-global”, i.e., global to everything between the two red lines
+// The type of each of these variables will be determined at first use.
+
+    var gameStarted,
+        gameOver,
+        score,
+        bg,
+        credits,
+        clouds,
+        fingers,
+        invs,
+        birdie,
+        fence,
+        scoreText,
+        instText,
+        gameOverText,
+        flapSnd,
+        scoreSnd,
+        hurtSnd,
+        fingersTimer,
+        cloudsTimer;
+
     function preload () {                // assign YOUR GAME specific assets - images and sounds
         var assets = {
             spritesheet: {
@@ -68,28 +90,6 @@ var state = {
             });
         });
     }
-
-// “gameStarted”, “gameOver”, “score”, “bg”, etc. are semi-global”, i.e., global to everything between the two red lines
-// The type of each of these variables will be determined at first use.
-
-    var gameStarted,
-        gameOver,
-        score,
-        bg,
-        credits,
-        clouds,
-        fingers,
-        invs,
-        birdie,
-        fence,
-        scoreText,
-        instText,
-        gameOverText,
-        flapSnd,
-        scoreSnd,
-        hurtSnd,
-        fingersTimer,
-        cloudsTimer;
 
     function create () {                // provide YOUR GAME-specific attributes for use with Phaser
 
@@ -194,11 +194,11 @@ var state = {
         game.input.onDown.add (flap);
 
         // add keyboard controls
-        flapKey = game.input.keyboard.addKey (Phaser.Keyboard.SPACEBAR);
-        flapKey.onDown.add (flap);
+        //flapKey = game.input.keyboard.addKey (Phaser.Keyboard.SPACEBAR);
+        //flapKey.onDown.add (flap);
 
         // keep the spacebar from propagating up to the browser
-        game.input.keyboard.addKeyCapture ([Phaser.Keyboard.SPACEBAR]);
+        //game.input.keyboard.addKeyCapture ([Phaser.Keyboard.SPACEBAR]);
 
         // Start clouds timer
         cloudsTimer = new Phaser.Timer (game);
