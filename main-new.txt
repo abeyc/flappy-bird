@@ -194,11 +194,11 @@ var state = {
         game.input.onDown.add (flap);
 
         // add keyboard controls
-        //flapKey = game.input.keyboard.addKey (Phaser.Keyboard.SPACEBAR);
-        //flapKey.onDown.add (flap);
+        flapKey = game.input.keyboard.addKey (Phaser.Keyboard.SPACEBAR);
+        flapKey.onDown.add (flap);
 
         // keep the spacebar from propagating up to the browser
-        //game.input.keyboard.addKeyCapture ([Phaser.Keyboard.SPACEBAR]);
+        game.input.keyboard.addKeyCapture ([Phaser.Keyboard.SPACEBAR]);
 
         // Start clouds timer
         cloudsTimer = new Phaser.Timer (game);
