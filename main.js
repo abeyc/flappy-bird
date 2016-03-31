@@ -23,7 +23,7 @@ WebFontConfig = {
     s.parentNode.insertBefore(wf, s);
 })();
 
-function main() {   // assign YOUR GAME specific assets - images and sounds
+function main() {
 
     // “parent” and “game” and “state” are semi-global”, i.e., global to everything between the two red lines
 
@@ -46,7 +46,7 @@ function main() {   // assign YOUR GAME specific assets - images and sounds
         false
     );
 
-    function preload() {
+    function preload() {   // assign YOUR GAME specific assets - images and sounds
         var assets = {
             spritesheet: {
                 birdie: ['assets/birdie.png', 35, 35],
