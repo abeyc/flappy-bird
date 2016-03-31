@@ -244,6 +244,7 @@ var state = {
         // START!
         gameStarted = true;
     }
+
     function flap() {      // runs upon mouse click(and spacebar prep)
         if (!gameStarted) {    // if game has not already started, start it
             start();
@@ -306,7 +307,7 @@ var state = {
         var botFinger = spawnFinger(fingerY);
 
         // Top finger (flipped)
-        var topFinger = spawnFinger(fingerY, true);
+        var topFinger = spawnFinger(fingerY, false);
 
         // Add invisible thingy
         var inv = invs.create(topFinger.x + topFinger.width, 0);
@@ -362,7 +363,7 @@ var state = {
             if (birdie.angle < -30) {
                 birdie.angle = -30;
             }
-            if (gameOver || birdie.angle > 90 || birdie.angle < -90) {
+            if (gameOver || (birdie.angle > 90) || (birdie.angle < -90)) {
                 birdie.angle = 90;
                 birdie.animations.stop();
                 birdie.frame = 3;
@@ -444,5 +445,5 @@ var state = {
             });
         }
     }
-}
+};
  
