@@ -3,9 +3,9 @@
 // Global variables, i.e., global to everything
 var DEBUG = false;
 var SPEED = 200;
-var GRAVITY = 1;
+var GRAVITY = 200;
 var FLAP = 700;
-var SPAWN_RATE = 1 / 1.2;
+var SPAWN_RATE = 1.2 / 1.2;
 var OPENING = 150;
 
 WebFontConfig = {
