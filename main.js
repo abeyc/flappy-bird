@@ -2,9 +2,9 @@
 
 // Global variables, i.e., global to everything
 var DEBUG = false;
-var SPEED = 900;
+var SPEED = 700;
 var GRAVITY = 50;
-var FLAP = 650;
+var FLAP = 700;
 var SPAWN_RATE = 1 / 1.2;
 var OPENING = 150;
 
