@@ -5,7 +5,7 @@ var DEBUG = false;
 var SPEED = 200;
 var GRAVITY = 200;
 var FLAP = 700;
-var SPAWN_RATE = 1.2 / 1.2;
+var SPAWN_RATE = 1 / 1.2;
 var OPENING = 150;
 
 WebFontConfig = {
@@ -101,7 +101,7 @@ function main() {
 
         // Draw bg (background)
         bg = game.add.graphics(0, 0);
-        bg.beginFill(0xDDEEFF, 1);
+        bg.beginFill(0xff0000, 1);
         bg.drawRect(0, 0, game.world.width, game.world.height);
         bg.endFill();
 
@@ -419,7 +419,6 @@ function main() {
             2 + 0.1 * Math.cos(game.time.now / 100),
             2 + 0.1 * Math.sin(game.time.now / 100)
         );
-        // Update clouds timer
         cloudsTimer.update();
 
         // Remove offscreen clouds
